@@ -47,7 +47,7 @@
     const tableBody = document.querySelector('#dtr-table tbody');
 
     const loadRecords = async () => {
-      const res = await fetch('http://192.168.100.46/api/records');
+      const res = await fetch('http://192.168.100.114/api/records');
       const data = await res.json();
       tableBody.innerHTML = '';
       data.forEach(record => {
@@ -70,7 +70,7 @@
       const time = now.toLocaleTimeString();
       const date = now.toLocaleDateString();
 
-      await fetch('http://192.168.100.46/api/records', {
+      await fetch('http://192.168.100.114/api/records', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ employee, action, time, date })
