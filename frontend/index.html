@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Daily Time Record</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+    th { background-color: #f2f2f2; }
+    input, button, select { padding: 8px; margin: 5px 0; }
+  </style>
+</head>
+<body>
+
+  <h2>Daily Time Record</h2>
+
+  <form id="dtr-form">
+    <label for="employee">Employee Name:</label>
+    <input type="text" id="employee" required />
+
+    <label for="action">Action:</label>
+    <select id="action">
+      <option value="Clock In">Clock In</option>
+      <option value="Clock Out">Clock Out</option>
+    </select>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <table id="dtr-table">
+    <thead>
+      <tr>
+        <th>Employee</th>
+        <th>Action</th>
+        <th>Time</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+
+  <script>
+    const form = document.getElementById('dtr-form');
+    const tableBody = document.querySelector('#dtr-table tbody');
+
+    const loadRecords = async () => {
+      const res = await fetch('http://192.168.100.46/api/records');
+      const data = await res.json();
+      tableBody.innerHTML = '';
+      data.forEach(record => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${record.employee}</td>
+          <td>${record.action}</td>
+          <td>${record.time}</td>
+          <td>${record.date}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    };
+
+    form.addEventListener('submit', async function(event) {
+      event.preventDefault();
+      const employee = document.getElementById('employee').value.trim();
+      const action = document.getElementById('action').value;
+      const now = new Date();
+      const time = now.toLocaleTimeString();
+      const date = now.toLocaleDateString();
+
+      await fetch('http://192.168.100.46/api/records', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ employee, action, time, date })
+      });
+
+      form.reset();
+      loadRecords();
+    });
+
+    loadRecords();
+  </script>
+
+</body>
+</html>
